@@ -3,6 +3,7 @@ from tensorflow.keras.layers import Embedding, Dense, Conv1D, Concatenate, Dropo
 from simpletransformers.classification import ClassificationModel
 
 
+# Модель НС и гиперпараметры для обучения
 class Models:
     def __init__(self, max_len=None, max_features=None, embedding_size=None, pool_size=None,
                  filters=None, outputs=None, architecture=None, model_id=None):
@@ -20,6 +21,7 @@ class Models:
         pass
 
 
+# Модель НС - TextRNN
 class TextRNN(Models):
     def get_model(self):
         input = Input((self.max_len,))
@@ -30,6 +32,7 @@ class TextRNN(Models):
         return model
 
 
+# Модель НС - TextСNN
 class TextCNN(Models):
     def get_model(self):
         input = Input((self.max_len,))
@@ -46,6 +49,7 @@ class TextCNN(Models):
         return model
 
 
+# Модель НС - Bert
 class BertModel(Models):
     def get_model(self):
         model = ClassificationModel(self.architecture, self.model_id, num_labels=self.outputs, use_cuda=False,
@@ -54,6 +58,8 @@ class BertModel(Models):
         return model
 
 
+# Обучение модели на тренировочной выборке
+# и оценка точности на тестовой.
 class TrainModels:
     def __init__(self, x_train=None, x_test=None, y_train=None, y_test=None,
                  batch_size=None, epochs=None, losses=None, model=None):
@@ -66,6 +72,7 @@ class TrainModels:
         self.model = model
         self.losses = losses
 
+    # Тренировка и оценка моделей TextRNN и TextCNN
     def train_model(self):
         self.model.compile('adam', self.losses, metrics=['accuracy'])
         self.model.fit(self.x_train, self.y_train,
@@ -76,6 +83,7 @@ class TrainModels:
         print('Точность: ' + str(round(scores[1] * 100, 2)) + '%')
 
 
+# Тренировка и оценка Bert
 class TrainBertModel(TrainModels):
     def train_model(self):
         self.model.train_model(self.x_train)

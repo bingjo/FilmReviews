@@ -1,5 +1,4 @@
 import re
-# import nltk
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 import numpy as np
@@ -10,6 +9,7 @@ from models import TextRNN, TrainModels, BertModel, TrainBertModel, TextCNN
 from tensorflow.keras.utils import to_categorical
 
 
+# Препроцессинг текстов
 class PreprocessingData:
 
     reg = re.compile('[^a-zA-Z ]')
@@ -27,6 +27,7 @@ class PreprocessingData:
     def cat_data_preprocessing(self):
         pass
 
+    # Получение текстов и соответствующих меток
     @staticmethod
     def get_texts_labels(train1: list, test1: list):
         texts = []
@@ -41,6 +42,8 @@ class PreprocessingData:
             labels.append(int(t[0]))
         return texts, labels
 
+    # Базовая предварительная обработка,
+    # которая используется во всех моделях
     @staticmethod
     def basic_preprocessing(text: str):
         # Удаление всех символов, кроме английских букв
@@ -57,8 +60,10 @@ class PreprocessingData:
         return text
 
 
+# Предварительная обработка для моделей RNN и CNN
 class TheFirstPreprocessing(PreprocessingData):
     def tokenizer(self):
+        # Приведение текстов и меток в масссивы чисел
         tokenizer = Tokenizer(num_words=self.max_features)
         tokenizer.fit_on_texts(self.texts)
         texts_seq = tokenizer.texts_to_sequences(self.texts)
@@ -66,6 +71,7 @@ class TheFirstPreprocessing(PreprocessingData):
         x_train, x_test, y_train, y_test = train_test_split(texts_mat, self.labels, random_state=42, train_size=0.7)
         return x_train, x_test, y_train, y_test
 
+    # Пред. обработка для бинарной классификации
     def bin_data_preprocessing(self):
         for i in range(len(self.labels)):
             if self.labels[i] <= 3:
@@ -77,6 +83,7 @@ class TheFirstPreprocessing(PreprocessingData):
         x_train, x_test, y_train, y_test = TheFirstPreprocessing.tokenizer(self)
         return x_train, x_test, y_train, y_test
 
+    # Пред. обработка для многоклассовой классификации
     def cat_data_preprocessing(self):
         x_train, x_test, y_train, y_test = TheFirstPreprocessing.tokenizer(self)
         y_train = to_categorical(y_train, num_classes=8)
@@ -84,7 +91,10 @@ class TheFirstPreprocessing(PreprocessingData):
         return x_train, x_test, np.asarray(y_train), np.asarray(y_test)
 
 
+# Предварительная обработка для обучения различных моделей BERT
+# с использованием бибилотеки Simple Transformers
 class BertPreprocessing(PreprocessingData):
+    # Приведение текстов и меток в DataFrame формат
     def tokenizer(self):
         x_train, x_test, y_train, y_test = train_test_split(self.texts, self.labels, random_state=42, train_size=0.7)
         train_data = []
@@ -99,6 +109,7 @@ class BertPreprocessing(PreprocessingData):
         test_df.columns = ["text", "labels"]
         return train_df, test_df
 
+    # Пред. обработка для бинарной классификации
     def bin_data_preprocessing(self):
         for i in range(len(self.labels)):
             if self.labels[i] <= 3:
@@ -108,12 +119,15 @@ class BertPreprocessing(PreprocessingData):
         train_df, test_df = BertPreprocessing.tokenizer(self)
         return train_df, test_df
 
+    # Пред. обработка для многоклассовой классификации
     def cat_data_preprocessing(self):
         train_df, test_df = BertPreprocessing.tokenizer(self)
         return train_df, test_df
 
 
+# Предварительная обработка текстов для fastText
 class FastTextPreProcessing(PreprocessingData):
+    # Запись текстовых файлов с метками и текстами
     def tokenizer(self):
         train_df = open('data/fasttext/train.txt', 'w', encoding='utf8')
         test_df = open('data/fasttext/test.txt', 'w', encoding='utf8')
@@ -137,15 +151,27 @@ class FastTextPreProcessing(PreprocessingData):
         train_df.close()
         test_df.close()
 
+    # Пред. обработка для бинарной классификации
+    def bin_data_preprocessing(self):
+        for i in range(len(self.labels)):
+            if self.labels[i] <= 3:
+                self.labels[i] = 0
+            else:
+                self.labels[i] = 1
+        FastTextPreProcessing.tokenizer(self)
+
+    # Пред. обработка для многоклассовой классификации
     def cat_data_preprocessing(self):
         FastTextPreProcessing.tokenizer(self)
 
 
 if __name__ == '__main__':
     user_model = 'FastText'
+    # Открытие набора данны
     file_train = open('data/train.txt', 'r', encoding='utf8').read().split('\n')
     file_test = open('data/test.txt', 'r', encoding='utf8').read().split('\n')
 
+    # Получение выборок, моделей НС и их обучение
     if user_model == 'BERT':
         train, test = BertPreprocessing(file_train, file_test).cat_data_preprocessing()
         model = BertModel(architecture='bert', model_id='bert-base-uncased', outputs=8).get_model()
