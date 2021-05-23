@@ -1,4 +1,4 @@
-# Оцека рецензий на фильмы
+# Оценка рецензий на фильмы
 
 ## Оглавление
 
@@ -37,6 +37,8 @@
 В разработанном веб-сервисе использвалась модель fastText, так как имеет самую большую точность (45.6%).
 
 [Исходный код](https://github.com/bingjo/FilmReviews/tree/main/Neural%20network%20models).
+
+Для обучения и тестирования моделей НС использовались [библиотеки python](https://github.com/bingjo/FilmReviews/blob/main/Neural%20network%20models/requirements.txt).
 
 ## Веб-сервис
 
