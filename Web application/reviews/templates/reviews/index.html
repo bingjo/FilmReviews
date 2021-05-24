@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Movies rating</title>
+        <style>
+            body{
+                background: #f2f1ef;
+            }
+
+            textarea{
+                resize: none;
+            }
+
+            h1{
+                color:black;
+            }
+
+            .inputText{
+              padding: 50px;
+              background: #f2f1ef;
+              position: fixed; top: 50%; left: 50%;
+              -webkit-transform: translate(-50%, -50%);
+              -ms-transform: translate(-50%, -50%);
+              transform: translate(-50%, -50%);
+            }
+
+
+            .error{
+                color: red;
+            }
+
+            .good{
+                color: green;
+            }
+
+            .bad{
+                color: orange;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="inputText">
+            <h1>Введите отзыв на фильм</h1>
+            <p>На английском языке. <b title="Модели НС обучены на английском языке!" onclick="alert('Модели НС обучены на английском языке!');">(?)</b></p>
+            <form method="POST">
+                {% csrf_token %}
+                <p><textarea name="comment" cols="70" rows="15">{{text}}</textarea></p>
+                <p><button type="submit" name="button">Выставить оценку</button></p>
+                <p><a href="{% url 'index' %}" class='btn btn-lg'>Очистить</a></p>
+            </form>
+            {% if error %}
+                <h2 class="error">{{ text_rating }}</h2>
+            {% else %}
+                <h2 class="review">{{ text_rating }}</h2>
+                {% if sentiment %}
+                    <h2 class="good">Положительный отзыв</h2>
+                {% else %}
+                    <h2 class="bad">Отрицательный отзыв</h2>
+                {% endif %}
+            {% endif %}
+        </div>
+    </body>
+</html>
