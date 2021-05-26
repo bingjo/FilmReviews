@@ -1,7 +1,5 @@
 # Оценка рецензий на фильмы
 
-***[Веб-приложение](http://90.188.95.219:8000/)***
-
 ***[Обученная модель fastText](https://drive.google.com/file/d/1KnIPPfSdsg_EAJERlQGWA3pRW7vKgGSS/view?usp=sharing)***
 
 ***[Подробный отчет](https://drive.google.com/file/d/13jhwSCmI3Ki5dE7kftkiCaUqbX-VkQKz/view?usp=sharing)***
